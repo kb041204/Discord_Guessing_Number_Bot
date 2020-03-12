@@ -142,7 +142,6 @@ async def on_message(message):
 		guess_target = "null"
 		guess_max = "null"
 		await curr_chan.send("An error occured during execution, reseting all the data...")
-		message_lock.release()
 	message_lock.release()
 
 client.run(TOKEN)
