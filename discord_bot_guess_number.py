@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-#GUILD = os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 
@@ -52,14 +51,14 @@ async def on_message(message):
 			return
 		
 		if first_part.startswith("help"): #(/guess_num help<any>)
-			response = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** Show the current game status\n***/guess_num <your_guess>*** Guess the number in the current game\n***/guess_num start <max_number>*** Start a new game with range 1~max_number (both exclusive)"
+			response = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ---------------------- Show the current game status\n***/guess_num <your_guess>*** ----------- Guess the number in the current game\n***/guess_num start <max_number>*** --- Start a new game with range 1~max_number (both exclusive)"
 		
 		else: #(/guess_num <first_part>)
 			if first_part.startswith("show"): #(/guess_num show<any>)
 				if guess_min == "null" or guess_max == "null":
-					response = "No game has started yet, start one with ***/guess_num start <max_number>***"
+					response = "No game has started yet, start one now with ***/guess_num start <max_number>***"
 				else:
-					response = "The current game is guess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
+					response = "The current guessing range is between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive).\nGuess a new number with command ***/guess_num <your_guess>***"
 				
 		
 			elif first_part.startswith("start"): #(/guess_num start<any>)
@@ -75,7 +74,7 @@ async def on_message(message):
 				try: 
 					new_max_number = int(max_number)
 				except ValueError:
-					line = message.author.name + ": \"" + str(max_number) + "\" is not an integer, please try again"
+					line = "\"" + str(max_number) + "\" is not an integer, please try again"
 					await curr_chan.send(line)
 					message_lock.release()
 					return
@@ -83,11 +82,11 @@ async def on_message(message):
 				#(/guess_num start <integer>)
 				#handle game already started
 				if guess_min != "null" or guess_max != "null":
-					response = message.author.name + ": A game has started, only one game is allowed to run at once"
+					response = "A game has started, only one game is allowed to run at once"
 				
 				#handle max_number too small (/guess_num start <too small>)
 				elif new_max_number <= 3:
-					response = message.author.name + ": The max number \"" + str(new_max_number) + "\" is smaller than or equal to 3, please use another number"
+					response = "The number \"" + str(new_max_number) + "\" is smaller than or equal to 3, please use another number"
 			
 				#correct command and max_number, start a game
 				else:
@@ -96,21 +95,21 @@ async def on_message(message):
 					random.seed()
 					guess_target = random.randint(guess_min+1, guess_max-1)
 					print("Log: Started a game, the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max))
-					response = message.author.name + " has start a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
+					response = message.author.name + " has started a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
 
 			else: #(/guess_num <first_part>)
 				#handle wrong data type (/guess_num <non-integer/none>)
 				try:
 					guessing_number = int(first_part)
 				except ValueError:
-					line = message.author.name + "'s guess \"" + str(first_part) + "\" is not an integer, please try again"
+					line = "\"" + str(first_part) + "\" is not an integer, please try again"
 					await curr_chan.send(line)
 					message_lock.release()
 					return
 				
 				#guess not yet stated
 				if guess_min == "null" or guess_max == "null":
-					response = message.author.name + " please start a game first by ***/guess_num start <max_number>***"
+					response = "Please start a game first by ***/guess_num start <max_number>***"
 
 				#guess out of range (/guess_num <non-integer>)
 				elif guessing_number <= guess_min or guessing_number >= guess_max:
