@@ -46,27 +46,27 @@ async def on_message(message):
 		try:
 			command, first_part = received_message.split(" ", 1)
 		except ValueError: #(/guess_num)
-			line = "Guess number BOT v0.1 made by shun\nCommands available:\n/guess_num show: show the current game status\n/guess_num <your_guess>: guess the number in the current game\n/guess_num start <max_number>: Start a new game with range 1~max_number (both exclusive)"
+			line = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ---------------------- Show the current game status\n***/guess_num <your_guess>*** ----------- Guess the number in the current game\n***/guess_num start <max_number>*** --- Start a new game with range 1~max_number (both exclusive)"
 			await curr_chan.send(line)
 			message_lock.release()
 			return
 		
 		if first_part.startswith("help"): #(/guess_num help<any>)
-			response = "Guess number BOT v0.1 made by shun\nCommands available:\n/guess_num show: show the current game status\n/guess_num <your_guess>: guess the number in the current game\n/guess_num start <max_number>: Start a new game with range 1~max_number (both exclusive)"
+			response = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** Show the current game status\n***/guess_num <your_guess>*** Guess the number in the current game\n***/guess_num start <max_number>*** Start a new game with range 1~max_number (both exclusive)"
 		
 		else: #(/guess_num <first_part>)
 			if first_part.startswith("show"): #(/guess_num show<any>)
 				if guess_min == "null" or guess_max == "null":
-					response = "No game has started yet, start one with \"/guess_num start <max_number>\""
+					response = "No game has started yet, start one with ***/guess_num start <max_number>***"
 				else:
-					response = "The current game is guess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command /guess_num <your_guess>"
+					response = "The current game is guess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
 				
 		
 			elif first_part.startswith("start"): #(/guess_num start<any>)
 				try:
 					first, max_number = first_part.split(" ", 1)
 				except ValueError: #(/guess_num start)
-					line = "Usage: \"/guess_num start <max_number>\""
+					line = "Usage: ***/guess_num start <max_number>***"
 					await curr_chan.send(line)
 					message_lock.release()
 					return
@@ -96,7 +96,7 @@ async def on_message(message):
 					random.seed()
 					guess_target = random.randint(guess_min+1, guess_max-1)
 					print("Log: Started a game, the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max))
-					response = message.author.name + " has start a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command /guess_num <your_guess>"
+					response = message.author.name + " has start a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
 
 			else: #(/guess_num <first_part>)
 				#handle wrong data type (/guess_num <non-integer/none>)
@@ -110,7 +110,7 @@ async def on_message(message):
 				
 				#guess not yet stated
 				if guess_min == "null" or guess_max == "null":
-					response = message.author.name + " please start a game first by \"/guess_num start <max_number>\""
+					response = message.author.name + " please start a game first by ***/guess_num start <max_number>***"
 
 				#guess out of range (/guess_num <non-integer>)
 				elif guessing_number <= guess_min or guessing_number >= guess_max:
@@ -121,7 +121,7 @@ async def on_message(message):
 					print("Log: " + message.author.name + " guessed " + str(guessing_number) + ", the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max) + " (both exclusive)")
 					if guessing_number == guess_target:
 						await message.add_reaction("\U0001F4A3") #Bomb emoji
-						response = message.author.name + " has guessed the correct number: " + str(guessing_number) + "! Round end"
+						response = message.author.name + " has guessed the correct number: " + str(guessing_number) + "!\nRound end"
 						guess_min = "null"
 						guess_target = "null"
 						guess_max = "null"
@@ -132,7 +132,7 @@ async def on_message(message):
 							guess_min = guessing_number
 						else:
 							guess_max = guessing_number
-						await message.add_reaction("\U0001F44C") #Okay emoji
+						await message.add_reaction("\U0001F44C") #Okay  hand emoji
 						response = message.author.name + "'s guess \"" + str(guessing_number) + "\" is safe! The new range is between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive)"
 	try:
 		await curr_chan.send(response)
