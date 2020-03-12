@@ -38,10 +38,9 @@ async def on_message(message):
 	if message.author == client.user: 
 		return
 	
-	message_lock.acquire()
 	#Display help
 	if received_message.startswith("/guess_num"): #(/guess_num<any>)
-		
+		message_lock.acquire()
 		try:
 			command, first_part = received_message.split(" ", 1)
 		except ValueError: #(/guess_num)
@@ -95,7 +94,7 @@ async def on_message(message):
 					random.seed()
 					guess_target = random.randint(guess_min+1, guess_max-1)
 					print("Log: Started a game, the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max))
-					response = message.author.name + " has started a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
+					response = message.author.display_name + " has started a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
 
 			else: #(/guess_num <first_part>)
 				#handle wrong data type (/guess_num <non-integer/none>)
@@ -113,18 +112,18 @@ async def on_message(message):
 
 				#guess out of range (/guess_num <non-integer>)
 				elif guessing_number <= guess_min or guessing_number >= guess_max:
-					response = message.author.name + "'s guess \"" + str(guessing_number) + "\" is not between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive), please try again"
+					response = "\"" + str(guessing_number) + "\" is not between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive), please try again"
 				
 				#correct command syntax and within range
 				else:
-					print("Log: " + message.author.name + " guessed " + str(guessing_number) + ", the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max) + " (both exclusive)")
+					print("Log: " + message.author.display_name + " guessed " + str(guessing_number) + ", the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max) + " (both exclusive)")
 					if guessing_number == guess_target:
 						await message.add_reaction("\U0001F4A3") #Bomb emoji
-						response = message.author.name + " has guessed the correct number: " + str(guessing_number) + "!\nRound end"
+						response = message.author.display_name + " has guessed the correct number: " + str(guessing_number) + "!\nRound end"
 						guess_min = "null"
 						guess_target = "null"
 						guess_max = "null"
-						print("Log: " + message.author.name + " has guessed the correct number, data reset successful")
+						print("Log: " + message.author.display_name + " has guessed the correct number, data reset successful")
 						
 					else:
 						if guessing_number > guess_min and guessing_number < guess_target:
@@ -132,16 +131,16 @@ async def on_message(message):
 						else:
 							guess_max = guessing_number
 						await message.add_reaction("\U0001F44C") #Okay  hand emoji
-						response = message.author.name + "'s guess \"" + str(guessing_number) + "\" is safe! The new range is between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive)"
-	try:
-		await curr_chan.send(response)
-	except UnboundLocalError as emsg:
-		print("Log: UnboundLocalError catched!!!!")
-		traceback.print_exc()
-		guess_min = "null"
-		guess_target = "null"
-		guess_max = "null"
-		await curr_chan.send("An error occured during execution, reseting all the data...")
-	message_lock.release()
+						response = message.author.display_name + "'s guess \"" + str(guessing_number) + "\" is safe! The new range is between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive)"
+		try:
+			await curr_chan.send(response)
+		except UnboundLocalError as emsg:
+			print("Log: UnboundLocalError catched!!!!")
+			traceback.print_exc()
+			guess_min = "null"
+			guess_target = "null"
+			guess_max = "null"
+			await curr_chan.send("An error occured during execution, reseting all the data...")
+		message_lock.release()
 
 client.run(TOKEN)
