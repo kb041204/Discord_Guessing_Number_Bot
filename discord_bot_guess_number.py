@@ -1,6 +1,5 @@
 import os
 import random
-import threading
 import traceback
 
 import discord
@@ -14,7 +13,6 @@ client = discord.Client()
 guess_min = "null"
 guess_target = "null"
 guess_max = "null"
-message_lock = threading.Lock()
 
 @client.event
 async def on_ready():
@@ -30,7 +28,7 @@ async def on_message(message):
 	global guess_min
 	global guess_target
 	global guess_max
-	
+
 	curr_chan = message.channel
 	received_message = message.content.lower()
 	
@@ -40,17 +38,15 @@ async def on_message(message):
 	
 	#Display help
 	if received_message.startswith("/guess_num"): #(/guess_num<any>)
-		message_lock.acquire()
 		try:
 			command, first_part = received_message.split(" ", 1)
 		except ValueError: #(/guess_num)
-			line = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ---------------------- Show the current game status\n***/guess_num <your_guess>*** ----------- Guess the number in the current game\n***/guess_num start <max_number>*** --- Start a new game with range 1~max_number (both exclusive)"
+			line = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ------------------------- Show the current game status\n***/guess_num <your_guess>*** -------------- Guess the number in the current game\n***/guess_num start <max_number>*** ------ Start a new game with range 1~max_number (both exclusive)"
 			await curr_chan.send(line)
-			message_lock.release()
 			return
 		
 		if first_part.startswith("help"): #(/guess_num help<any>)
-			response = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ---------------------- Show the current game status\n***/guess_num <your_guess>*** ----------- Guess the number in the current game\n***/guess_num start <max_number>*** --- Start a new game with range 1~max_number (both exclusive)"
+			response = "Guess Number BOT v0.1.1 made by shun\nCommands available:\n***/guess_num show*** ------------------------- Show the current game status\n***/guess_num <your_guess>*** -------------- Guess the number in the current game\n***/guess_num start <max_number>*** ------ Start a new game with range 1~max_number (both exclusive)"
 		
 		else: #(/guess_num <first_part>)
 			if first_part.startswith("show"): #(/guess_num show<any>)
@@ -66,23 +62,21 @@ async def on_message(message):
 				except ValueError: #(/guess_num start)
 					line = "Usage: ***/guess_num start <max_number>***"
 					await curr_chan.send(line)
-					message_lock.release()
 					return
-					
+
 				#handle wrong data type (/guess_num start <non-integer/none>)
 				try: 
 					new_max_number = int(max_number)
-				except ValueError:
+				except ValueError: #(/guess_num start <non-integer/none>)
 					line = "\"" + str(max_number) + "\" is not an integer, please try again"
 					await curr_chan.send(line)
-					message_lock.release()
 					return
-					
+
 				#(/guess_num start <integer>)
 				#handle game already started
 				if guess_min != "null" or guess_max != "null":
 					response = "A game has started, only one game is allowed to run at once"
-				
+			
 				#handle max_number too small (/guess_num start <too small>)
 				elif new_max_number <= 3:
 					response = "The number \"" + str(new_max_number) + "\" is smaller than or equal to 3, please use another number"
@@ -95,7 +89,6 @@ async def on_message(message):
 					guess_target = random.randint(guess_min+1, guess_max-1)
 					print("Log: Started a game, the target number is " + str(guess_target) + ", range: " + str(guess_min) + "~" + str(guess_max))
 					response = message.author.display_name + " has started a game.\nGuess a number between " + str(guess_min) + " and " + str(guess_max) + " (both exclusive) with command ***/guess_num <your_guess>***"
-
 			else: #(/guess_num <first_part>)
 				#handle wrong data type (/guess_num <non-integer/none>)
 				try:
@@ -103,7 +96,6 @@ async def on_message(message):
 				except ValueError:
 					line = "\"" + str(first_part) + "\" is not an integer, please try again"
 					await curr_chan.send(line)
-					message_lock.release()
 					return
 				
 				#guess not yet stated
@@ -141,6 +133,5 @@ async def on_message(message):
 			guess_target = "null"
 			guess_max = "null"
 			await curr_chan.send("An error occured during execution, reseting all the data...")
-		message_lock.release()
 
 client.run(TOKEN)
