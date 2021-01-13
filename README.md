@@ -1,7 +1,7 @@
 # Discord_Guessing_Number_Bot
 Simple discord BOT that let players participate in the game of guessing the number
 
-##Commands available:
+## Commands available:
 ```
 /guess_num show
 Show the current game status
